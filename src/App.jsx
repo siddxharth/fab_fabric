@@ -16,27 +16,15 @@ const AddRect = (canvas, rectRef) => {
 	canvas.add(rectRef.current);
 }
 
-const PrintCoords = (canvas, rectRef) => {
+const GetCoords = (canvas, rectRef) => {
 	var objects = canvas.getObjects();
 	if (objects.length === 0) {
-		console.log('No rectangle found');
+		return 'No rectangle found';
 	} else {
 		objects = canvas.getObjects();
 		rectRef.current = objects[0];
-		var leftCord = rectRef.current.left;
-		var topCord = rectRef.current.top;
-		console.log(`(${rectRef.current.left}, ${rectRef.current.top})`);
-		return (
-			<div>
-				{`${leftCord}, ${topCord}`}
-			</div>
-		)
+		return `(${rectRef.current.left}, ${rectRef.current.top})`;
 	}
-	return (
-		<div>
-			{`${leftCord}, ${topCord}`}
-		</div>
-	)
 }
 
 
@@ -60,16 +48,27 @@ const App = () => {
 	});
 	const [canvas, setCanvas] = useState(canvi);
 	canvas.on('object:moving', (e) => {
-		PrintCoords(canvas, rectRef);
+		GetCoords(canvas, rectRef);
 		useRef.current = rectRef;
+		setCoords(GetCoords(canvas, rectRef));
 	});
-	const [coord] = useState(PrintCoords(canvas, rectRef));
+
+	const handleCoords = () => {
+		return `(${rectRef.current.left}, ${rectRef.current.top})`;
+	}
+
+	const [coords, setCoords] = useState(handleCoords(rectRef.current));
+
+	useEffect(() => {
+		handleCoords(rectRef.current);
+	}, [rectRef]);
+
 	return (
 		<div>
 			<h1>Canvas</h1>
 			<button onClick={() => AddRect(canvas, rectRef)}>Add Rect</button>
-			<button onClick={() => PrintCoords(canvas, rectRef)}>Print Coords</button>
-			{coord}
+			<button onClick={() => GetCoords(canvas, rectRef)}>Print Coords</button>
+			{handleCoords(rectRef.current)}
 			<canvas id="canvas" />
 		</div>
 	)
