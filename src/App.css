@@ -5,4 +5,9 @@
 }
 body{
   max-height: 100vh;
+  margin: 0 20px;
+}
+
+#details{
+  line-height: 2rem;
 }

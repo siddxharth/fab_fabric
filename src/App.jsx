@@ -2,76 +2,51 @@ import React, { useState, useEffect, useRef } from 'react';
 import { fabric } from 'fabric';
 import './App.css';
 
-const initCanvas = () => {
-	const canvi = new fabric.Canvas('canvas', {
-		height: window.innerHeight - 100,
-		width: window.innerWidth - 100,
-	});
-	return (
-		canvi
-	)
-}
-
-const AddRect = (canvas, rectRef) => {
-	canvas.add(rectRef.current);
-}
-
-const GetCoords = (canvas, rectRef) => {
-	var objects = canvas.getObjects();
-	if (objects.length === 0) {
-		return 'No rectangle found';
-	} else {
-		objects = canvas.getObjects();
-		rectRef.current = objects[0];
-		return `(${rectRef.current.left}, ${rectRef.current.top})`;
-	}
-}
-
-
 const App = () => {
+	const canvi = () => {
+		const canvi = new fabric.Canvas('canvas', {
+			height: 700,
+			width: 1200,
+		})
+		canvi.add(rectRef.current);
+		return canvi;
+	}
+	const [canvas, setCanvas] = useState(null);
 	const rectRef = useRef(new fabric.Rect({
-		left: 100,
-		top: 100,
 		fill: 'red',
 		width: 100,
-		height: 50,
-		borderColor: 'black',
-	})
-	);
+		height: 100,
+		left: 300,
+		top: 300,
+		hasControls: false,
+	}));
 	useEffect(() => {
-		setCanvas(initCanvas());
+		setCanvas(canvi);
 	}, []);
-
-	const canvi = new fabric.Canvas('canvas', {
-		height: window.innerHeight - 100,
-		width: window.innerWidth - 100,
-	});
-	const [canvas, setCanvas] = useState(canvi);
-	canvas.on('object:moving', (e) => {
-		GetCoords(canvas, rectRef);
-		useRef.current = rectRef;
-		setCoords(GetCoords(canvas, rectRef));
+	
+	rectRef.current.on('moving', (e) => {
+		setCoords([rectRef.current.left, rectRef.current.top]);
 	});
 
-	const handleCoords = () => {
-		return `(${rectRef.current.left}, ${rectRef.current.top})`;
+	const [isSelected, setIsSelected] = useState(false);
+	rectRef.current.onSelect = () => {
+		setIsSelected(true);
 	}
-
-	const [coords, setCoords] = useState(handleCoords(rectRef.current));
-
-	useEffect(() => {
-		handleCoords(rectRef.current);
-	}, [rectRef]);
+	rectRef.current.onDeselect = () => {
+		setIsSelected(false);
+	}
+	const [coords, setCoords] = useState([rectRef.current.left, rectRef.current.top]);
 
 	return (
 		<div>
-			<h1>Canvas</h1>
-			<button onClick={() => AddRect(canvas, rectRef)}>Add Rect</button>
-			<button onClick={() => GetCoords(canvas, rectRef)}>Print Coords</button>
-			{handleCoords(rectRef.current)}
+			<div id='details'>
+				fabric-canvas works!
+				<p>x-axis position: {coords[0]}</p>
+				<p>y-axis position: {coords[1]}</p>
+				<p>Shape selected: {isSelected?'true':'false'}</p>
+			</div>
 			<canvas id="canvas" />
 		</div>
 	)
 }
-
 export default App;
