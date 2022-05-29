@@ -4,14 +4,18 @@ import './App.css';
 
 const App = () => {
 	const canvi = () => {
+		// Create new fabric canvas object
 		const canvi = new fabric.Canvas('canvas', {
 			height: 700,
 			width: 1200,
 		})
+		// Add the rectangle object to the canvas
 		canvi.add(rectRef.current);
 		return canvi;
 	}
+	// Store canvas state
 	const [canvas, setCanvas] = useState(null);
+	// Create a ref to hold the rectangle object
 	const rectRef = useRef(new fabric.Rect({
 		fill: 'red',
 		width: 100,
@@ -20,14 +24,16 @@ const App = () => {
 		top: 300,
 		hasControls: false,
 	}));
+	// Update the canvas on mount
 	useEffect(() => {
 		setCanvas(canvi);
 	}, []);
-	
+	// If the rectangle is moving, update the coords
 	rectRef.current.on('moving', (e) => {
 		setCoords([rectRef.current.left, rectRef.current.top]);
 	});
 
+	// Is the rectangle selected?
 	const [isSelected, setIsSelected] = useState(false);
 	rectRef.current.onSelect = () => {
 		setIsSelected(true);
@@ -35,6 +41,7 @@ const App = () => {
 	rectRef.current.onDeselect = () => {
 		setIsSelected(false);
 	}
+	// Store the rectangle coords
 	const [coords, setCoords] = useState([rectRef.current.left, rectRef.current.top]);
 
 	return (
